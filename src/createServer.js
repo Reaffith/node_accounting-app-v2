@@ -110,7 +110,7 @@ function createServer() {
     if (categories) {
       expensesToReturn = [...expensesToReturn].filter((expense) =>
         // eslint-disable-next-line prettier/prettier
-        categories.includes(expense.category));
+        categories.includes(expense.category),);
     }
 
     if (from) {
@@ -178,6 +178,12 @@ function createServer() {
   app.delete('/expenses/:id', (req, res) => {
     const { id } = req.params;
 
+    if (isNaN(+id)) {
+      res.status(400).send({ message: 'ID should be numeric' });
+
+      return;
+    }
+
     if (!expenses.find((expense) => expense.id === +id)) {
       res.status(404).send({ message: 'No such expense' });
 
@@ -195,6 +201,12 @@ function createServer() {
     const { id } = req.params;
     const { userId, spentAt, title, amount, category, note } = req.body;
 
+    if (isNaN(+id)) {
+      res.status(400).send({ message: 'ID should be numeric' });
+
+      return;
+    }
+
     const expenseToUpdate = expenses.find((expense) => expense.id === +id);
 
     if (!expenseToUpdate) {
@@ -203,11 +215,7 @@ function createServer() {
       return;
     }
 
-    if (isNaN(+id)) {
-      res.status(400).send({ message: 'ID should be numeric' });
-
-      return;
-    } else if (!userId && !spentAt && !title && !amount && !category && !note) {
+    if (!userId && !spentAt && !title && !amount && !category && !note) {
       res.status(400).send({ message: 'At least one field is required' });
 
       return;
